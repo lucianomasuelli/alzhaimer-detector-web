@@ -1,0 +1,11 @@
+# Versiones minimas probadas localmente; FIJAR a las usadas para extraer los embeddings de entrenamiento
+# (ver README, "Paridad") antes de desplegar.
+torch>=2.2
+transformers>=4.40
+librosa>=0.10
+soundfile>=0.12
+numpy
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+huggingface_hub>=0.23

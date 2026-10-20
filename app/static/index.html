@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo: voz y Alzheimer</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main>
+  <div class="disclaimer" role="alert">
+    <strong>Prototipo de investigación. No es una herramienta diagnóstica.</strong>
+    El resultado no debe usarse para tomar decisiones médicas. El modelo se entrenó solo con la lectura de un
+    texto específico y no es válido para habla libre ni para otras condiciones de grabación.
+    El audio se procesa en memoria y no se guarda.
+  </div>
+  <div id="stub" class="stub" hidden>Modo demostración: el modelo todavía no tiene pesos entrenados; el resultado es aleatorio.</div>
+
+  <h1>Detección de Alzheimer por voz</h1>
+  <h2>1. Leé en voz alta el siguiente texto completo</h2>
+  <blockquote id="texto">
+    En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza
+    en astillero, adarga antigua, rocín flaco y galgo corredor. Una olla de algo más vaca que carnero, salpicón las más
+    noches, duelos y quebrantos los sábados, lentejas los viernes, algún palomino de añadidura los domingos, consumían las
+    tres partes de su hacienda. <!-- TODO: confirmar el texto exacto usado en el dataset Ivanova -->
+  </blockquote>
+
+  <h2>2. Grabá o subí el audio</h2>
+  <div class="row">
+    <button id="rec">● Grabar</button>
+    <span id="timer"></span>
+    <input id="file" type="file" accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a,.flac">
+  </div>
+  <audio id="player" controls hidden></audio>
+  <button id="send" disabled>Analizar</button>
+
+  <div id="result" hidden></div>
+  <p id="error" class="error" hidden></p>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

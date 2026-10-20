@@ -1,0 +1,15 @@
+:root { --fg:#1c1c1e; --bg:#fafafa; --warn:#fff3cd; --warnb:#e0a800; --acc:#2f5fd0; }
+@media (prefers-color-scheme: dark) { :root { --fg:#eee; --bg:#18181a; --warn:#4a3d10; --warnb:#b88a00; } }
+body { font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); margin: 0; }
+main { max-width: 720px; margin: 0 auto; padding: 16px; }
+.disclaimer { background: var(--warn); border: 2px solid var(--warnb); padding: 12px; border-radius: 8px; }
+.stub { background: #fde2e2; color: #7a1010; padding: 8px 12px; border-radius: 8px; margin-top: 8px; }
+blockquote { border-left: 4px solid var(--acc); margin: 0; padding: 4px 12px; font-size: 1.05rem; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+button { font: inherit; padding: 8px 16px; border-radius: 8px; border: 0; background: var(--acc); color: #fff; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+button.recording { background: #c0392b; }
+#result { margin-top: 16px; padding: 12px; border: 1px solid #8884; border-radius: 8px; }
+.bar { height: 10px; background: #8883; border-radius: 5px; overflow: hidden; margin: 4px 0 8px; }
+.bar > div { height: 100%; background: var(--acc); }
+.error { color: #c0392b; }
