@@ -1,0 +1,26 @@
+{
+  "name": "e1-audio-early",
+  "encoder_id": "facebook/wav2vec2-xls-r-1b",
+  "n_layers": 49,
+  "hidden": 1280,
+  "head_dim": 128,
+  "dropout": 0.4,
+  "layer_range": [
+    0,
+    16
+  ],
+  "pool_stats": "both",
+  "threshold": 0.6699999999999999,
+  "labels": [
+    "HC",
+    "AD"
+  ],
+  "sample_rate": 16000,
+  "min_duration_s": 5.0,
+  "max_duration_s": 160.0,
+  "versions": {
+    "torch": "2.9.1+cu128",
+    "transformers": "4.57.5",
+    "librosa": "0.11.0"
+  }
+}
