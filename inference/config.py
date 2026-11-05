@@ -21,7 +21,7 @@ class ModelSpec:
     labels: list[str] = field(default_factory=lambda: ["HC", "AD"])  # indice 1 = AD
     sample_rate: int = 16000
     min_duration_s: float = 5.0
-    max_duration_s: float = 120.0               # provisorio: fijar con scripts/audio_durations.py
+    max_duration_s: float = 220.0               # cubre el maximo de entrenamiento (AD: 217.9 s)
     versions: dict = field(default_factory=dict)  # torch/transformers/librosa usados al entrenar
 
     @classmethod

@@ -18,6 +18,18 @@ def test_decode_matches_librosa_load(tmp_path):
     np.testing.assert_allclose(got, ref, atol=1e-5)
 
 
+def test_decode_mp3_matches_librosa_load(tmp_path):
+    """El MP3 tiene que decodificarse igual que en entrenamiento (sin el padding que agrega ffmpeg)."""
+    wav = tmp_path / "a.wav"
+    wav.write_bytes(make_wav_bytes(seconds=3.3, channels=2))
+    mp3 = tmp_path / "a.mp3"
+    subprocess.run(["ffmpeg", "-v", "error", "-i", str(wav), "-c:a", "libmp3lame", str(mp3)], check=True)
+    ref, _ = librosa.load(mp3, sr=16000, mono=True)
+    got = decode_audio(mp3.read_bytes())
+    assert got.shape == ref.shape
+    np.testing.assert_array_equal(got, ref)
+
+
 def test_decode_mp3_and_webm(tmp_path):
     wav = tmp_path / "a.wav"
     wav.write_bytes(make_wav_bytes(seconds=2))

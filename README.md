@@ -24,7 +24,7 @@ scripts/     check_parity, check_head_vs_research, benchmark, audio_durations, e
 tests/       pytest (sin red: encoder XLS-R aleatorio diminuto)
 ```
 
-Pipeline (replica `modules/preprocess/extract_pooled_features.py`): bytes → ffmpeg (formato nativo) → promedio de
+Pipeline (replica `modules/preprocess/extract_pooled_features.py`): bytes → soundfile (wav/mp3/flac/ogg) o ffmpeg (webm/m4a) → promedio de
 canales → `librosa.resample` a 16 kHz → `Wav2Vec2FeatureExtractor` → XLS-R fp32, `output_hidden_states` →
 media y desvío poblacional por capa `(49, 2, 1280)` → cabeza (z-score con `mu/sd` del checkpoint, suma ponderada
 de capas, MLP) → `sigmoid` = P(AD). Audio completo en una pasada (sin chunking). Los audios nunca se escriben a disco.
@@ -65,9 +65,10 @@ python scripts/check_head_vs_research.py /ruta/a/alzhaimer-detector   # cabeza v
 python scripts/audio_durations.py dataset/Ivanova/train/audio --csv durations.csv   # fijar max_duration_s
 ```
 
-Pendiente de verificar (el entorno de desarrollo no tenía acceso al HF Hub): `do_normalize` de
-`facebook/wav2vec2-xls-r-1b` y paridad numérica real. **Pinnear en `requirements.txt` las versiones usadas
-para extraer los embeddings.**
+Resultados en el cluster (`out_e1_early/REPORT.md`): WAV en GPU idéntico bit a bit; en CPU difiere ~5e-3 en el
+embedding (la extracción usó la GPU, probablemente con TF32), con un efecto ~1e-6 en P(AD). Los MP3 se leen con
+soundfile (libsndfile), igual que `librosa.load`; ffmpeg se usa solo para webm/m4a. `requirements.txt` fija las
+versiones del entorno de entrenamiento.
 
 ## Benchmark
 

@@ -1,10 +1,12 @@
-# Versiones minimas probadas localmente; FIJAR a las usadas para extraer los embeddings de entrenamiento
-# (ver README, "Paridad") antes de desplegar.
-torch>=2.2
-transformers>=4.40
-librosa>=0.10
-soundfile>=0.12
-numpy
+# Versiones del entorno donde se extrajeron los embeddings de entrenamiento (cluster, ver
+# out_e1_early/REPORT.md). soundfile 0.13.1 trae libsndfile 1.2.2: mismo decodificador de MP3.
+# En Docker torch se instala desde el indice CPU (2.9.1+cpu).
+torch==2.9.1
+transformers==4.57.5
+librosa==0.11.0
+soundfile==0.13.1
+soxr==1.1.0
+numpy==2.2.6
 fastapi>=0.110
 uvicorn[standard]>=0.29
 python-multipart>=0.0.9
