@@ -16,6 +16,8 @@ Uso (cluster, entorno cogni; e1-fusion necesita openai-whisper y el repo de inve
       --research-repo ~/dementiaDetection/Code/alzhaimer-detector --device cpu --threads 2 \\
       --out results_inference/cpu
 Smoke test local, sin red: python scripts/compare_inference.py --tiny --out /tmp/x
+Consolidar corridas separadas (p. ej. una variante por job):
+  python scripts/compare_inference.py --merge out_a/e1-fusion.json out_b/e1-audio.json ... --out results_inference/cpu
 """
 import argparse
 import importlib.util
@@ -197,24 +199,33 @@ def q(xs, p):
 
 
 def summarize(results, out_dir):
-    lines = ["| variante | params (M) | carga (s) | latencia mediana (s) | latencia p95 (s) | RTF mediana | RTF p95 "
-             "| RSS pico (MB) | GPU pico (MB) | etapas (mediana, s) |",
-             "|---|---|---|---|---|---|---|---|---|---|"]
+    def sd(xs):
+        return statistics.stdev(xs) if len(xs) > 1 else 0.0
+
+    lines = ["**Tiempo de inferencia por audio**", "",
+             "| variante | latencia media ± DE (s) | mediana (s) | p95 (s) | RTF media ± DE | RTF mediana | RTF p95 |",
+             "|---|---|---|---|---|---|---|"]
+    res = ["**Recursos y etapas**", "",
+           "| variante | params (M) | carga (s) | RSS pico (MB) | GPU pico (MB) | etapas (media, s) |",
+           "|---|---|---|---|---|---|"]
     for r in results:
         lat = [x["latency_s"] for x in r["rows"]]
         rtf = [x["rtf"] for x in r["rows"]]
-        stages = {k: statistics.median(x["stages_s"].get(k, 0.0) for x in r["rows"])
+        stages = {k: statistics.mean(x["stages_s"].get(k, 0.0) for x in r["rows"])
                   for k in r["rows"][0]["stages_s"]}
         st = ", ".join(f"{k} {v:.2f}" for k, v in stages.items())
         gpu = f"{r['gpu_peak_mb']:.0f}" if r["gpu_peak_mb"] is not None else "-"
-        lines.append(f"| {r['variant']} | {r['params_m']:.1f} | {r['load_s']:.1f} | {statistics.median(lat):.2f} | "
-                     f"{q(lat, .95):.2f} | {statistics.median(rtf):.3f} | {q(rtf, .95):.3f} | {r['rss_peak_mb']:.0f} | "
-                     f"{gpu} | {st} |")
+        lines.append(f"| {r['variant']} | {statistics.mean(lat):.2f} ± {sd(lat):.2f} | {statistics.median(lat):.2f} | "
+                     f"{q(lat, .95):.2f} | {statistics.mean(rtf):.3f} ± {sd(rtf):.3f} | {statistics.median(rtf):.3f} | "
+                     f"{q(rtf, .95):.3f} |")
+        res.append(f"| {r['variant']} | {r['params_m']:.1f} | {r['load_s']:.1f} | {r['rss_peak_mb']:.0f} | {gpu} | {st} |")
+    lines += [""] + res
     r0 = results[0]
     durs = [x["duration_s"] for x in r0["rows"]]
     head = (f"Dispositivo: {r0['device']} | hilos: {r0['threads']} | torch {r0['torch']} | {len(durs)} audios "
             f"(duracion mediana {statistics.median(durs):.1f} s, rango {min(durs):.1f}-{max(durs):.1f} s). "
-            "RTF = tiempo de proceso / duracion del audio (< 1: mas rapido que tiempo real). "
+            "RTF = tiempo de proceso / duracion del audio (< 1: mas rapido que tiempo real); DE = desvio estandar "
+            "entre audios. "
             "Latencia: desde los bytes del archivo hasta P(AD), una solicitud a la vez, sin la carga del modelo.")
     md = head + "\n\n" + "\n".join(lines) + "\n"
     (out_dir / "summary.md").write_text(md)
@@ -238,10 +249,20 @@ def main():
     ap.add_argument("--research-repo", help="necesario para e1-fusion (cabeza audio+texto)")
     ap.add_argument("--tiny", action="store_true", help="smoke test con un encoder aleatorio diminuto")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--merge", nargs="+", metavar="JSON",
+                    help="consolidar JSON de corridas separadas (<variante>.json) en un solo summary.md")
     ap.add_argument("--_one", help=argparse.SUPPRESS)        # uso interno: correr una sola variante
     a = ap.parse_args()
     out_dir = Path(a.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if a.merge:
+        results = [json.loads(Path(f).read_text()) for f in a.merge]
+        sets = {tuple(sorted(Path(x["file"]).name for x in r["rows"])) for r in results}
+        if len(sets) > 1:   # mismas --n y --seed en todas las corridas
+            raise SystemExit("las corridas no usan los mismos audios: no son comparables")
+        summarize(results, out_dir)
+        return
 
     if a._one:
         files = json.loads((out_dir / "files.json").read_text())
