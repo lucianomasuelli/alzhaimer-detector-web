@@ -84,6 +84,13 @@ versiones del entorno de entrenamiento.
 python scripts/benchmark.py --durations 10 30 60 --repeats 3     # modelo real; --tiny = smoke test
 ```
 
+### Comparación de costo de inferencia
+
+`scripts/compare_inference.py` mide, sobre los mismos audios y en subprocesos separados, E1-fusion
+(XLS-R + Whisper turbo + DistilmBERT), E1-audio, E1-audio-early y E1-audio-early recortado: latencia por etapa,
+RTF (tiempo de proceso / duración del audio), memoria pico, parámetros y tiempo de carga. Escribe `summary.md`
+y `per_file.csv`. Smoke test: `python scripts/compare_inference.py --tiny --out /tmp/ci`.
+
 ## Deploy en Hugging Face Spaces (Docker, CPU)
 
 1. Crear un Space (SDK: Docker) y agregarlo como remoto: `git remote add space https://huggingface.co/spaces/USUARIO/NOMBRE`.
