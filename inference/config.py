@@ -23,6 +23,17 @@ class ModelSpec:
     min_duration_s: float = 5.0
     max_duration_s: float = 220.0               # cubre el maximo de entrenamiento (AD: 217.9 s)
     versions: dict = field(default_factory=dict)  # torch/transformers/librosa usados al entrenar
+    # True: correr solo las primeras layer_range[1] capas del encoder (las demas la cabeza las
+    # descarta). Mismo resultado, menos RAM y tiempo. False (default): XLS-R completo.
+    truncate_encoder: bool = False
+
+    def encoder_layers(self) -> int | None:
+        """Capas transformer a cargar, o None = todas."""
+        if not self.truncate_encoder:
+            return None
+        if not self.layer_range:
+            raise ValueError("truncate_encoder requiere layer_range")
+        return int(self.layer_range[1])
 
     @classmethod
     def from_json(cls, path):

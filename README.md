@@ -41,7 +41,15 @@ curl -F file=@lectura.wav localhost:7860/predict
 Sin checkpoint, la cabeza tiene **pesos aleatorios** (`"stub": true` en la respuesta y banner en la UI).
 Con checkpoint: `MODEL_REPO=usuario/alzheimer-head` (repo del HF Hub con `head.pth` + `config.json`,
 `MODEL_REVISION` para fijar el commit) o `MODEL_CONFIG=config.json MODEL_HEAD=head.pth` locales.
-Otras variables: `MAX_UPLOAD_MB` (25).
+Otras variables: `MAX_UPLOAD_MB` (25), `TRUNCATE_ENCODER` (ver abajo).
+
+### Encoder recortado (opcional)
+
+E1-audio-early solo usa las capas [0, 16) de XLS-R. Con `TRUNCATE_ENCODER=1` (o `"truncate_encoder": true`
+en `config.json`) se cargan solo las 16 primeras capas transformer: las capas que usa la cabeza son idénticas
+(`tests/test_truncation.py` lo verifica con igualdad exacta) y el encoder pasa de ~4 GB a ~1.3 GB de RAM, con
+~3x menos tiempo. Por defecto se usa el encoder completo. `/health` informa `encoder_layers` (`null` = completo).
+Verificación con el modelo real: `scripts/check_parity.py AUDIO REF.pt --truncate 16`.
 
 ## Exportar el checkpoint
 

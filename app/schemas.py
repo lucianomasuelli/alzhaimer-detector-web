@@ -14,3 +14,4 @@ class HealthOut(BaseModel):
     status: str
     model: str
     stub: bool
+    encoder_layers: int | None   # None = encoder completo

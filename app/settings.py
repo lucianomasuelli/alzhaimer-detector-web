@@ -5,3 +5,4 @@ MODEL_REVISION = os.getenv("MODEL_REVISION", "main")
 MODEL_CONFIG = os.getenv("MODEL_CONFIG", "")        # config.json local (opcional)
 MODEL_HEAD = os.getenv("MODEL_HEAD", "")            # head.pth local (opcional)
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "25"))
+TRUNCATE_ENCODER = os.getenv("TRUNCATE_ENCODER", "")   # "1"/"0" pisa truncate_encoder del config.json

@@ -1,6 +1,6 @@
 """Latencia y memoria en CPU del pipeline completo (decodificacion + XLS-R + cabeza).
 
-Uso: python scripts/benchmark.py [--durations 10 30 60 120] [--repeats 3] [--tiny]
+Uso: python scripts/benchmark.py [--durations 10 30 60 120] [--repeats 3] [--tiny] [--config config.json] [--truncate]
 Reporta tiempo por duracion de audio y RSS pico del proceso (MB). Usa el stub si no hay checkpoint.
 """
 import argparse
@@ -28,11 +28,17 @@ def main():
     ap.add_argument("--repeats", type=int, default=3)
     ap.add_argument("--tiny", action="store_true", help="encoder aleatorio diminuto (solo smoke test)")
     ap.add_argument("--head", help="head.pth (opcional)")
+    ap.add_argument("--config", help="config.json (opcional; p. ej. out_e1_early/config.json)")
+    ap.add_argument("--truncate", action="store_true", help="encoder recortado a layer_range[1] capas")
     a = ap.parse_args()
 
     print(f"torch threads={torch.get_num_threads()}")
     t = time.perf_counter()
-    spec = ModelSpec(max_duration_s=max(a.durations) + 1)
+    spec = ModelSpec.from_json(a.config) if a.config else ModelSpec()
+    spec.max_duration_s = max(a.durations) + 1
+    spec.truncate_encoder = a.truncate
+    if a.truncate and not spec.layer_range:
+        spec.layer_range = [0, 16]          # E1-audio-early
     enc = None
     if a.tiny:
         spec = ModelSpec(name="tiny", n_layers=3, hidden=32, head_dim=8, max_duration_s=spec.max_duration_s)

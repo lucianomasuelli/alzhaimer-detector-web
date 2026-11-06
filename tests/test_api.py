@@ -13,7 +13,7 @@ def client(tiny_predictor):
 
 def test_health(client):
     j = client.get("/health").json()
-    assert j == {"status": "ok", "model": "tiny", "stub": True}
+    assert j == {"status": "ok", "model": "tiny", "stub": True, "encoder_layers": None}
 
 
 def test_predict_ok(client):

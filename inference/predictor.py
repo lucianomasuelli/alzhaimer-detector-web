@@ -39,7 +39,7 @@ class Predictor:
     @classmethod
     def load(cls, spec: ModelSpec, head_path: str | Path | None = None, encoder: XlsrEncoder | None = None):
         """head_path=None -> cabeza con pesos aleatorios (stub)."""
-        encoder = encoder or XlsrEncoder.from_pretrained(spec.encoder_id)
+        encoder = encoder or XlsrEncoder.from_pretrained(spec.encoder_id, spec.encoder_layers(), spec.n_layers)
         if head_path is None:
             torch.manual_seed(0)            # stub reproducible
         head = FrozenFeatureHead(spec.n_layers, spec.hidden, spec.head_dim, spec.dropout,

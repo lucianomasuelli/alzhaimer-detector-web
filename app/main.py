@@ -27,6 +27,8 @@ def load_default_predictor():
     elif settings.MODEL_CONFIG:
         spec = ModelSpec.from_json(settings.MODEL_CONFIG)
         head = settings.MODEL_HEAD or None
+    if settings.TRUNCATE_ENCODER:
+        spec.truncate_encoder = settings.TRUNCATE_ENCODER == "1"
     return get_predictor(spec, head)
 
 
@@ -42,7 +44,7 @@ def create_app(predictor_factory=load_default_predictor) -> FastAPI:
     @app.get("/health", response_model=HealthOut)
     def health():
         p = app.state.predictor
-        return HealthOut(status="ok", model=p.spec.name, stub=p.stub)
+        return HealthOut(status="ok", model=p.spec.name, stub=p.stub, encoder_layers=p.encoder.num_layers)
 
     @app.post("/predict", response_model=PredictionOut)
     async def predict(file: UploadFile = File(...)):
