@@ -207,7 +207,7 @@ def summarize(results, out_dir):
                   for k in r["rows"][0]["stages_s"]}
         st = ", ".join(f"{k} {v:.2f}" for k, v in stages.items())
         gpu = f"{r['gpu_peak_mb']:.0f}" if r["gpu_peak_mb"] is not None else "-"
-        lines.append(f"| {r['variant']} | {r["params_m"]:.1f} | {r['load_s']:.1f} | {statistics.median(lat):.2f} | "
+        lines.append(f"| {r['variant']} | {r['params_m']:.1f} | {r['load_s']:.1f} | {statistics.median(lat):.2f} | "
                      f"{q(lat, .95):.2f} | {statistics.median(rtf):.3f} | {q(rtf, .95):.3f} | {r['rss_peak_mb']:.0f} | "
                      f"{gpu} | {st} |")
     r0 = results[0]
