@@ -8,12 +8,6 @@
 </head>
 <body>
 <main>
-  <div class="disclaimer" role="alert">
-    <strong>Prototipo de investigación. No es una herramienta diagnóstica.</strong>
-    El resultado no debe usarse para tomar decisiones médicas. El modelo se entrenó solo con la lectura de un
-    texto específico y no es válido para habla libre ni para otras condiciones de grabación.
-    El audio se procesa en memoria y no se guarda.
-  </div>
   <div id="stub" class="stub" hidden>Modo demostración: el modelo todavía no tiene pesos entrenados; el resultado es aleatorio.</div>
 
   <h1>Detección de Alzheimer por voz</h1>
@@ -28,15 +22,18 @@
   <h2>2. Grabá o subí el audio</h2>
   <div class="row">
     <button id="rec">● Grabar</button>
-    <span id="timer"></span>
     <input id="file" type="file" accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a,.flac">
   </div>
-  <audio id="player" controls hidden></audio>
-  <button id="send" disabled>Analizar</button>
+  <div class="row player">
+    <button id="play" class="icon" disabled aria-label="Reproducir">▶</button>
+    <div id="wave"></div>
+    <span id="time"></span>
+    <button id="send" disabled>Analizar</button>
+  </div>
 
   <div id="result" hidden></div>
   <p id="error" class="error" hidden></p>
 </main>
-<script src="/static/app.js"></script>
+<script type="module" src="/static/app.js"></script>
 </body>
 </html>

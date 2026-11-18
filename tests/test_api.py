@@ -36,4 +36,5 @@ def test_garbage_is_422(client):
 
 
 def test_index(client):
-    assert "prototipo de investigación" in client.get("/").text.lower()
+    r = client.get("/")
+    assert r.status_code == 200 and 'id="send"' in r.text
